@@ -31,7 +31,7 @@
 #define CAN_SIGNATURE_MAB17             230
 #define CAN_SIGNATURE_MIC17             240
 
-#define CAN_SIGNATURE_SELF              CAN_SIGNATURE_MAB17
+#define CAN_SIGNATURE_SELF              CAN_SIGNATURE_MCS17
 
 //------------------------------------------------------------------------------
 

@@ -37,12 +37,24 @@
 
 
 // INPUT PINS DEFINITIONS
-//#define     DEAD_MAN_SWITCH         PD5
-//#define     ON_OFF_SWITCH           PD4
-//#define     SWITCHES_PORT           PORTD
-//#define     SWITCHES_PIN            PIND
-//#define     SWITCHES_DDR            DDRD
-
+#define     RELAYS_1_5_PORT         PORTD
+#define     RELAYS_1_5_PIN          PIND
+#define     RELAYS_1_5_DDR          DDRD
+#define     RELAY1                  PD3
+#define     set_relay1()            set_bit(RELAYS_1_5_PORT, RELAY1);
+#define     clr_relay1()            clr_bit(RELAYS_1_5_PORT, RELAY1);
+#define     RELAY2                  PD4
+#define     set_relay2()            set_bit(RELAYS_1_5_PORT, RELAY2);
+#define     clr_relay2()            clr_bit(RELAYS_1_5_PORT, RELAY2);
+#define     RELAY3                  PD7
+#define     set_relay3()            set_bit(RELAYS_1_5_PORT, RELAY3);
+#define     clr_relay3()            clr_bit(RELAYS_1_5_PORT, RELAY3);
+#define     RELAY4                  PD2
+#define     set_relay4()            set_bit(RELAYS_1_5_PORT, RELAY4);
+#define     clr_relay4()            clr_bit(RELAYS_1_5_PORT, RELAY4);
+#define     RELAY5                  PD5
+#define     set_relay5()            set_bit(RELAYS_1_5_PORT, RELAY5);
+#define     clr_relay5()            clr_bit(RELAYS_1_5_PORT, RELAY5);
 
 #define     LED_PORT                PORTD
 #define     LED_PIN                 PIND

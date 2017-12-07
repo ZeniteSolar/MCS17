@@ -11,13 +11,6 @@ int main(void)
 
     _delay_ms(1000);
 
-    #ifdef PWM_ON
-        VERBOSE_MSG_INIT(usart_send_string("PWM..."));
-        pwm_init();
-        VERBOSE_MSG_INIT(usart_send_string(" OK!\n"));
-    #endif 
- 
-
     #ifdef CAN_ON
         VERBOSE_MSG_INIT(usart_send_string("CAN (500kbps)..."));
         can_init(BITRATE_500_KBPS);
@@ -53,15 +46,12 @@ int main(void)
 	#endif
 
     set_bit(LED_DDR, LED);                      // LED como saída
-    //set_bit()
-    //set_bit(PWM_DDR, PWM);                      // PWM como saida
-    
-	// Configuracoes a interrupcao externa por FAULT (IR2127)
-    //clr_bit(FAULT_DDR, FAULT);                  // FAULT como entrada
-    //set_bit(FAULT_PORT, FAULT);                 // FAULT com pull-up
-    //set_bit(EICRA, ISC11);                      // falling edge for int1
-    //set_bit(EIMSK, INT1);                       // enables int1 interrupt
-    //set_bit(EIFR, INTF1);                       // clears int1 interrupt
+    set_bit(RELAY0_DDR, RELAY0);
+    set_bit(RELAYS_1_5_DDR, RELAY1);
+    set_bit(RELAYS_1_5_DDR, RELAY2);
+    set_bit(RELAYS_1_5_DDR, RELAY3);
+    set_bit(RELAYS_1_5_DDR, RELAY4);
+    set_bit(RELAYS_1_5_DDR, RELAY5);
 
     sei();
 	
