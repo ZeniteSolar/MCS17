@@ -40,21 +40,41 @@
 #define     RELAYS_1_5_PORT         PORTD
 #define     RELAYS_1_5_PIN          PIND
 #define     RELAYS_1_5_DDR          DDRD
+
+#define     RELAY0_DDR              DDRC
+#define     RELAY0_PORT             PORTC
+#define     RELAY0_PIN              PINC
+
+#define     MAINRELAY_DDR           DDRC
+#define     MAINRELAY_PORT          PORTC
+#define     MAINRELAY_PIN           PINC
+
+#define     RELAY0                  PC0
+#define     set_relay0              set_bit(RELAY0_PORT, RELAY0)
+#define     clr_relay0              clr_bit(RELAY0_PORT, RELAY0)
+
+#define     MAINRELAY_OFF           PC1
+#define     MAINRELAY_ON            PC2
+
 #define     RELAY1                  PD3
-#define     set_relay1()            set_bit(RELAYS_1_5_PORT, RELAY1);
-#define     clr_relay1()            clr_bit(RELAYS_1_5_PORT, RELAY1);
+#define     set_relay1()            set_bit(RELAYS_1_5_PORT, RELAY1)
+#define     clr_relay1()            clr_bit(RELAYS_1_5_PORT, RELAY1)
+
 #define     RELAY2                  PD4
-#define     set_relay2()            set_bit(RELAYS_1_5_PORT, RELAY2);
-#define     clr_relay2()            clr_bit(RELAYS_1_5_PORT, RELAY2);
+#define     set_relay2()            set_bit(RELAYS_1_5_PORT, RELAY2)
+#define     clr_relay2()            clr_bit(RELAYS_1_5_PORT, RELAY2)
+
 #define     RELAY3                  PD7
-#define     set_relay3()            set_bit(RELAYS_1_5_PORT, RELAY3);
-#define     clr_relay3()            clr_bit(RELAYS_1_5_PORT, RELAY3);
+#define     set_relay3()            set_bit(RELAYS_1_5_PORT, RELAY3)
+#define     clr_relay3()            clr_bit(RELAYS_1_5_PORT, RELAY3)
+
 #define     RELAY4                  PD2
-#define     set_relay4()            set_bit(RELAYS_1_5_PORT, RELAY4);
-#define     clr_relay4()            clr_bit(RELAYS_1_5_PORT, RELAY4);
+#define     set_relay4()            set_bit(RELAYS_1_5_PORT, RELAY4)
+#define     clr_relay4()            clr_bit(RELAYS_1_5_PORT, RELAY4)
+
 #define     RELAY5                  PD5
-#define     set_relay5()            set_bit(RELAYS_1_5_PORT, RELAY5);
-#define     clr_relay5()            clr_bit(RELAYS_1_5_PORT, RELAY5);
+#define     set_relay5()            set_bit(RELAYS_1_5_PORT, RELAY5)
+#define     clr_relay5()            clr_bit(RELAYS_1_5_PORT, RELAY5)
 
 #define     LED_PORT                PORTD
 #define     LED_PIN                 PIND

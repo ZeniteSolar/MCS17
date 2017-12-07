@@ -35,10 +35,10 @@ inline void can_app_task(void)
         can_app_send_state_clk_div = 0;
     }
 
-    if(can_app_send_motor_clk_div++ >= CAN_APP_SEND_MOTOR_CLK_DIV){
-        VERBOSE_MSG_CAN_APP(usart_send_string("motor msg was sent.\n"));
-        can_app_send_motor();
-        can_app_send_motor_clk_div = 0;
+    if(can_app_send_mcs_clk_div++ >= CAN_APP_SEND_MCS_CLK_DIV){
+        VERBOSE_MSG_CAN_APP(usart_send_string("mcs msg was sent.\n"));
+        can_app_send_mcs();
+        can_app_send_mcs_clk_div = 0;
     }
 
 }
@@ -46,7 +46,7 @@ inline void can_app_task(void)
 inline void can_app_send_state(void)
 {
     can_t msg;
-    msg.id                                  = CAN_FILTER_MSG_MAM17_STATE;
+    msg.id                                  = CAN_FILTER_MSG_MCS17_STATE;
     msg.length                              = CAN_LENGTH_MSG_STATE;
 
     msg.data[CAN_SIGNATURE_BYTE]            = CAN_SIGNATURE_SELF;
@@ -56,15 +56,19 @@ inline void can_app_send_state(void)
     can_send_message(&msg);
 }
 
-inline void can_app_send_motor(void)
+inline void can_app_send_mcs(void)
 {
     can_t msg;
-    msg.id                                  = CAN_FILTER_MSG_MAM17_MOTOR;
-    msg.length                              = CAN_LENGTH_MSG_MAM17_MOTOR;
+    msg.id                                  = CAN_FILTER_MSG_MCS17_BOAT_ON;
+    msg.length                              = CAN_LENGTH_MSG_MCS17_BOAT_ON;
+
+    for(uint8_t i = msg.length; i; i--)     msg.data[i-1] = 0;
 
     msg.data[CAN_SIGNATURE_BYTE]            = CAN_SIGNATURE_SELF;
-    msg.data[CAN_MSG_MAM17_MOTOR_D_BYTE]    = control.D;
-    msg.data[CAN_MSG_MAM17_MOTOR_LIM_BYTE]  = control.I;    
+    msg.data[CAN_MSG_MCS17_VBAT_BYTE]       = control.Vbat;
+    msg.data[CAN_MSG_MCS17_MAIN_RELAY_BYTE] |= 
+        (system_flags.boat_on << CAN_MSG_MCS17_MAIN_RELAY_BIT);
+
 
     can_send_message(&msg); 
 }
@@ -85,42 +89,23 @@ inline void can_app_extractor_mic17_state(can_t *msg)
         /*if(contador == maximo)*/{
             //ERROR!!!
         }
-
-         
     }
 }
  
 /**
- * @brief extracts the specific MIC17 MOTOR  message
- *
- * The msg is AAAAAAAA0000000CBEEEEEEEEFFFFFFFF
- * A is the Signature of module
- * B is the motor on/off switch
- * C is the deadman's switch
- * E is the voltage potentiometer
- * F is the current potentiometer
+ * @brief extracts the specific MIC17 BOAT_ON message
  *
  * @param *msg pointer to the message to be extracted
 */ 
-inline void can_app_extractor_mic17_motor(can_t *msg)
+inline void can_app_extractor_mic17_mcs(can_t *msg)
 {
     if(msg->data[CAN_SIGNATURE_BYTE] == CAN_SIGNATURE_MIC17){
         
         can_app_checks_without_mic17_msg = 0;
 
-        system_flags.motor_on       = bit_is_set(msg->data[
-            CAN_MSG_MIC17_MOTOR_MOTOR_ON_BYTE], 
-            CAN_MSG_MIC17_MOTOR_MOTOR_ON_BIT);
-        
-        system_flags.dms            = bit_is_set(msg->data[
-            CAN_MSG_MIC17_MOTOR_DMS_BYTE], 
-            CAN_MSG_MIC17_MOTOR_DMS_BIT);
-         
-        control.D_raw_target        = msg->data[
-            CAN_MSG_MIC17_MOTOR_D_RAW_BYTE];
-
-        control.I_raw_target        = msg->data[
-            CAN_MSG_MIC17_MOTOR_I_RAW_BYTE];
+        system_flags.boat_on       = bit_is_set(msg->data[
+            CAN_MSG_MIC17_MCS_BOAT_ON_BYTE], 
+            CAN_MSG_MIC17_MCS_BOAT_ON_BIT);
 
     }
 }
@@ -133,10 +118,10 @@ inline void can_app_msg_extractors_switch(can_t *msg)
 {
     if(msg->data[CAN_SIGNATURE_BYTE] == CAN_SIGNATURE_MIC17){
         switch(msg->id){
-            case CAN_FILTER_MSG_MIC17_MOTOR:
-                VERBOSE_MSG_CAN_APP(usart_send_string("got a motor msg: "));
+            case CAN_FILTER_MSG_MIC17_MCS:
+                VERBOSE_MSG_CAN_APP(usart_send_string("got a boat_on msg: "));
                 VERBOSE_MSG_CAN_APP(can_app_print_msg(msg));
-                can_app_extractor_mic17_motor(msg);
+                can_app_extractor_mic17_mcs(msg);
                 break;
             case CAN_FILTER_MSG_MIC17_STATE:
                 VERBOSE_MSG_CAN_APP(usart_send_string("got a state msg: "));
