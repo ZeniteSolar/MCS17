@@ -50,11 +50,15 @@
 #define     MAINRELAY_PIN           PINC
 
 #define     RELAY0                  PC0
-#define     set_relay0              set_bit(RELAY0_PORT, RELAY0)
-#define     clr_relay0              clr_bit(RELAY0_PORT, RELAY0)
+#define     set_relay0()            set_bit(RELAY0_PORT, RELAY0)
+#define     clr_relay0()            clr_bit(RELAY0_PORT, RELAY0)
 
 #define     MAINRELAY_OFF           PC1
 #define     MAINRELAY_ON            PC2
+#define     set_mainrelay_on()      set_bit(MAINRELAY_PORT, MAINRELAY_ON)
+#define     clr_mainrelay_on()      clr_bit(MAINRELAY_PORT, MAINRELAY_ON)
+#define     set_mainrelay_off()     set_bit(MAINRELAY_PORT, MAINRELAY_OFF)
+#define     clr_mainrelay_off()     clr_bit(MAINRELAY_PORT, MAINRELAY_OFF)
 
 #define     RELAY1                  PD3
 #define     set_relay1()            set_bit(RELAYS_1_5_PORT, RELAY1)
