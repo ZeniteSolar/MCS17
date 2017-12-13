@@ -12,6 +12,7 @@
 
 #include <avr/io.h>
 #include <avr/wdt.h>
+#include <util/delay.h>
 
 #include "conf.h"
 #include "adc.h"
