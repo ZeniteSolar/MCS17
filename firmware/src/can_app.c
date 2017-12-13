@@ -69,7 +69,6 @@ inline void can_app_send_mcs(void)
     msg.data[CAN_MSG_MCS17_MAIN_RELAY_BYTE] |= 
         (system_flags.boat_on << CAN_MSG_MCS17_MAIN_RELAY_BIT);
 
-
     can_send_message(&msg); 
 }
 
