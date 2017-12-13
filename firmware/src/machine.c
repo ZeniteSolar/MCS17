@@ -92,6 +92,50 @@ inline void print_control(void)
 } 
 
 /**
+* @brief turns on the mainrealy (a laching relay) by using a pulse of 250ms
+*/
+void pulse_mainrelay_on(void)
+{
+    clr_mainrelay_off();     //having shure to not set both coils at the same time
+    set_mainrelay_on();
+    _delay_ms(250);
+    clr_mainrelay_on();
+}
+
+/**
+* @brief turns off the mainrealy (a laching relay) by using a pulse of 250ms
+*/
+void pulse_mainrelay_off(void)
+{
+    clr_mainrelay_on();     //having shure to not set both coils at the same time
+    set_mainrelay_off();
+    _delay_ms(250);
+    clr_mainrelay_off();
+}
+
+/**
+ * @breif turns the boat on, slowly charging the caps before activate the
+ * main relay
+ */
+void turn_boat_on(void)
+{
+
+}
+
+/**
+ * @brief turns the boat off.
+ */
+void turn_boat_off(void)
+{
+    pulse_mainrelay_off();           
+    _delay_ms(50);
+    pulse_mainrelay_off();           
+    _delay_ms(50);
+    pulse_mainrelay_off();           
+    _delay_ms(50); 
+}
+ 
+/**
  * @brief Checks if the system is OK to run.
  *
  */
@@ -123,12 +167,13 @@ inline void task_idle(void)
         led_clk_div = 0;
     }
  
-    //if(system_flags.motor_on && system_flags.dms && system_flags.pot_zero_width)
+    if(system_flags.boat_on)
     {
         VERBOSE_MSG_MACHINE(usart_send_string("Enjoy, the system is at its RUNNING STATE!!\n"));
         set_state_running();
     }
 }
+
 
 
 /**
@@ -139,6 +184,12 @@ inline void task_running(void)
     if(led_clk_div++ >= 10){
         cpl_led();
         led_clk_div = 0;
+    }
+
+    if(system_flags.boat_on){
+        turn_boat_on();
+    }else{
+        turn_boat_off();
     }
 
 }
