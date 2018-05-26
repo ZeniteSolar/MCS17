@@ -18,7 +18,6 @@
 //#define VERBOSE_ON_ADC
 #define VERBOSE_ON_INIT
 #define VERBOSE_ON_ERROR
-//#define CAN_PRINT_MSG
 
 
 // MODULES ACTIVATION
@@ -28,8 +27,14 @@
 #define MACHINE_ON
 #define WATCHDOG_ON
 #define SLEEP_ON
- 
-// OUTPUT PINS DEFINITIONS
+
+// number of checks before reset the pwm fault counter.
+#define CHECKS_BEFORE_RESET_FAULT_COUNTER 250
+// maximum of consecutive faults before state an error
+#define FAULT_COUNT_LIMIT           250
+
+
+// INPUT PINS DEFINITIONS
 #define     RELAYS_1_5_PORT         PORTD
 #define     RELAYS_1_5_PIN          PIND
 #define     RELAYS_1_5_DDR          DDRD
@@ -81,10 +86,6 @@
 #define     set_led()               set_bit(LED_PORT, LED)
 #define     clr_led()               clr_bit(LED_PORT, LED)
 
-// number of checks before reset the pwm fault counter.
-#define CHECKS_BEFORE_RESET_FAULT_COUNTER 100
-// maximum of consecutive faults before state an error
-#define FAULT_COUNT_LIMIT           50
 
 // CANBUS DEFINITONS
 // ----------------------------------------------------------------------------

@@ -1,5 +1,12 @@
 #include "machine.h"
 
+/*
+ * to-do:
+ *      - modularize state sinalization
+ *      - 
+ *
+ */
+
 /**
  * @brief 
  */
@@ -15,18 +22,10 @@ void machine_init(void)
             | (1 << CS20);
     OCR2A   =   80;                                // Valor para igualdade de comparacao A par  a frequencia de 150 Hz
     TIMSK2 |=   (1 << OCIE2A);                      // Ativa a interrupcao na igualdade de comp  aração do TC2 com OCR2A
-} 
 
-/**
- * @brief checks the buffer and waits it fills up
- */
-inline void check_buffers(void)
-{
-    VERBOSE_MSG(usart_send_string("Checking buffers..."));
-    while(!CBUF_IsFull(cbuf_adc3));
-    while(!CBUF_IsFull(cbuf_adc4));
-    VERBOSE_MSG(usart_send_string(" \t\tdone.\n")); 
+	
 }
+
 /**
  * @brief set error state
  */
@@ -48,7 +47,6 @@ inline void set_state_initializing(void)
 */ 
 inline void set_state_idle(void)
 {
-    turn_boat_off();
     state_machine = STATE_IDLE;
 }
 
@@ -57,26 +55,42 @@ inline void set_state_idle(void)
 */ 
 inline void set_state_running(void)
 {
-    turn_boat_on();
     state_machine = STATE_RUNNING;
 }
 
 /**
-* @brief checks the capacitor bank voltage
-*/ 
-inline void check_capacitor_voltage(void)
+* @brief prints the system flags
+*/
+inline void print_system_flags(void)
 {
-    control.capacitor_voltage = ma_adc3();
+    
+    //VERBOSE_MSG_MACHINE(usart_send_string(" Pot_zero: "));
+    //VERBOSE_MSG_MACHINE(usart_send_char(48+system_flags.pot_zero_width)); 
+}
+
+/**
+* @brief prints the error flags
+*/
+inline void print_error_flags(void)
+{
+    //VERBOSE_MSG_MACHINE(usart_send_string(" NOCAN: "));
+    //VERBOSE_MSG_MACHINE(usart_send_char(48+error_flags.no_canbus));
+    //VERBOSE_MSG_MACHINE(usart_send_char('\n'));
 }
  
 /**
-* @brief checks the battery voltage
-*/ 
-inline void check_battery_voltage(void)
+* @brief prints the error flags
+*/
+inline void print_control(void)
 {
-    control.battery_voltage = ma_adc4();
-}
-
+    /*VERBOSE_MSG_MACHINE(usart_send_string(" I: "));
+    VERBOSE_MSG_MACHINE(usart_send_uint16(control.I_raw));
+    VERBOSE_MSG_MACHINE(usart_send_char(' '));
+    VERBOSE_MSG_MACHINE(usart_send_uint16(control.I_raw_target));
+    VERBOSE_MSG_MACHINE(usart_send_char(' '));
+    VERBOSE_MSG_MACHINE(usart_send_uint16(control.I));
+    */
+} 
 
 /**
 * @brief turns on the mainrealy (a laching relay) by using a pulse of 250ms
@@ -129,7 +143,6 @@ void turn_boat_on(void)
     clr_relay3();
     clr_relay4();
     clr_relay5();
-
     set_relay0();
 }
 
@@ -140,7 +153,6 @@ void turn_boat_on(void)
 void turn_boat_off(void)
 {
     clr_relay0();
-
     clr_relay1();
     clr_relay2();
     clr_relay3();
@@ -154,59 +166,14 @@ void turn_boat_off(void)
     _delay_ms(50);
 }
  
-
 /**
-* @brief prints the system flags
-*/
-inline void print_system_flags(void)
-{
-    VERBOSE_MSG_MACHINE(usart_send_string(" BOAT: "));
-    VERBOSE_MSG_MACHINE(usart_send_char(48+system_flags.boat_on));
-
-    VERBOSE_MSG_MACHINE(usart_send_char('\n'));
-}
-
-/**
-* @brief prints the error flags
-*/
-inline void print_error_flags(void)
-{
-    // VERBOSE_MSG_MACHINE(usart_send_string(" NOCAN: "));
-    // VERBOSE_MSG_MACHINE(usart_send_char(48+error_flags.no_canbus));
-}
- 
-/**
-* @brief prints the error flags
-*/
-inline void print_control(void)
-{
-    VERBOSE_MSG_MACHINE(usart_send_string(" BatV: "));
-    VERBOSE_MSG_MACHINE(usart_send_uint16(control.battery_voltage));
-    VERBOSE_MSG_MACHINE(usart_send_char(' '));
-
-    VERBOSE_MSG_MACHINE(usart_send_string(" CapV: "));
-    VERBOSE_MSG_MACHINE(usart_send_uint16(control.capacitor_voltage));
-    VERBOSE_MSG_MACHINE(usart_send_char(' ')); 
-}
-
-/**
- * @brief Checks if the system is OK to run:
- *  - all ring_buffers needed to be full
- *  - checks the current
- *  - checks the voltage
- *
+ * @brief Checks if the system is OK to run.
  */
 inline void task_initializing(void)
 {
     set_led();
-
-#ifdef CAN_ON
-    check_can();
-#endif
-
-#ifdef ADC_ON
-    check_buffers();
-#endif    
+    system_flags.boat_on = 0;
+    turn_boat_off();
 
     if(!error_flags.all){
         VERBOSE_MSG_INIT(usart_send_string("System initialized without errors.\n"));
@@ -219,11 +186,7 @@ inline void task_initializing(void)
 }
 
 /**
- * @brief waits for commands while checking the system:
- *  - checks the deadman's switch state
- *  - checks the on_off_switch state
- *  - checks the potentiometer state
- *  then if its ok, enable the system to operate
+ * @brief waits for commands while Checks the system.
  */
 inline void task_idle(void)
 {
@@ -232,18 +195,15 @@ inline void task_idle(void)
         led_clk_div = 0;
     }
 
-    check_battery_voltage();
-
     if(system_flags.boat_on){
+        VERBOSE_MSG_MACHINE(usart_send_string("\t\tRUNNING STATE ===> BOAT ON!!!\n"));
+        turn_boat_on();
         set_state_running();
     }
-
-    VERBOSE_MSG_MACHINE(usart_send_string("Enjoy, the system is at its RUNNING STATE!!\n"));
 }
 
-
 /**
- * @brief running task checks the system and apply the control action to pwm.
+ * @brief running task checks the system and apply the control of relays
  */
 inline void task_running(void)
 {
@@ -253,9 +213,11 @@ inline void task_running(void)
     }
 
     if(!system_flags.boat_on){
-        set_state_idle();
+        VERBOSE_MSG_MACHINE(usart_send_string("\t\tIDLE STATE ===> BOAT OFF!!!\n"));
+        //turn_boat_off();
+        //set_state_idle();
     }
-
+    
 }
 
 /**
@@ -273,10 +235,19 @@ inline void task_error(void)
     VERBOSE_MSG_ERROR(usart_send_uint16(error_flags.all));
     VERBOSE_MSG_ERROR(usart_send_char('\n'));
 
-    // if(error_flags.no_canbus)
-    //     VERBOSE_MSG_ERROR(usart_send_string("\t - No canbus communication with MIC17!\n"));
+    /*if(error_flags.overcurrent)
+        VERBOSE_MSG_ERROR(usart_send_string("\t - Motor over-current!\n"));
+    if(error_flags.overvoltage)
+        VERBOSE_MSG_ERROR(usart_send_string("\t - Motor over-voltage!\n"));
+    if(error_flags.overheat)
+        VERBOSE_MSG_ERROR(usart_send_string("\t - Motor over-heat!\n"));
+    if(error_flags.fault)
+        VERBOSE_MSG_ERROR(usart_send_string("\t - IR2127 FAULT!\n"));
+    if(error_flags.no_canbus)
+        VERBOSE_MSG_ERROR(usart_send_string("\t - No canbus communication with MIC17!\n"));
     if(!error_flags.all)
         VERBOSE_MSG_ERROR(usart_send_string("\t - Oh no, it was some unknown error.\n"));
+    */
  
     VERBOSE_MSG_ERROR(usart_send_string("The error level is: "));
     VERBOSE_MSG_ERROR(usart_send_uint16(total_errors));
@@ -300,10 +271,7 @@ inline void task_error(void)
  */
 inline void machine_run(void)
 {
-	#ifdef CAN_ON
     can_app_task();
-	#endif
-
     print_system_flags();
     print_error_flags();
     print_control();
@@ -333,23 +301,11 @@ inline void machine_run(void)
 }
 
 /**
- * @brief Interrupcao das chaves: se alguma chave desligar, o motor desliga.
- */
-
-ISR(INT0_vect) //overvoltage
-{
-	// DEBUG1;
-}
-ISR(INT1_vect) //enable
-{    
-    // DEBUG1;
-}
-
-/**
 * @brief ISR para ações de controle
 */
 ISR(TIMER2_COMPA_vect)
 {
+    //VERBOSE_MSG_ERROR(if(machine_clk) usart_send_string("\nERROR: CLOCK CONFLICT!!!\n"));
 	machine_clk = 1;
 }
 

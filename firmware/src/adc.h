@@ -24,7 +24,7 @@
 typedef volatile enum adc_channels{ 
     ADC0, ADC1 ,ADC2, ADC3, ADC4, ADC5  
 } adc_channels_t;                           //*< the adc_channel type 
-static adc_channels_t ADC_CHANNEL = ADC0;   //*< current chosen adc channel
+static adc_channels_t ADC_CHANNEL = ADC3;   //*< current chosen adc channel
 
 uint8_t adc_select_channel(adc_channels_t __ch);
 void adc_init(void);
