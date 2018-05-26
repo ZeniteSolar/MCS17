@@ -9,7 +9,7 @@ int main(void)
         VERBOSE_MSG_INIT(usart_send_string("\n\n\nUSART... OK!\n"));
     #endif
 
-    _delay_ms(1000);
+    _delay_ms(500); // this will be the second module to initialize
 
     #ifdef CAN_ON
         VERBOSE_MSG_INIT(usart_send_string("CAN (500kbps)..."));
@@ -44,15 +44,38 @@ int main(void)
 		machine_init();
         VERBOSE_MSG_INIT(usart_send_string(" OK!\n"));
 	#endif
-
-    set_bit(LED_DDR, LED);                      // LED como saída
-    set_bit(RELAY0_DDR, RELAY0);
-    set_bit(RELAYS_1_5_DDR, RELAY1);
-    set_bit(RELAYS_1_5_DDR, RELAY2);
-    set_bit(RELAYS_1_5_DDR, RELAY3);
-    set_bit(RELAYS_1_5_DDR, RELAY4);
-    set_bit(RELAYS_1_5_DDR, RELAY5);
-
+	
+    // configuracao dos pinos I/O
+    VERBOSE_MSG(usart_send_string("I/O's..."));
+    set_bit(LED_DDR, LED);                      // LED as output
+    set_bit(RELAY0_DDR, RELAY0);                // RELAY0 as output
+    set_bit(RELAYS_1_5_DDR, RELAY1);            // RELAY1 as output
+    set_bit(RELAYS_1_5_DDR, RELAY2);            // RELAY2 as output
+    set_bit(RELAYS_1_5_DDR, RELAY3);            // RELAY3 as output
+    set_bit(RELAYS_1_5_DDR, RELAY4);            // RELAY4 as output
+    set_bit(RELAYS_1_5_DDR, RELAY5);            // RELAY5 as output
+    set_bit(MAINRELAY_DDR, MAINRELAY_ON);       // MAINRELAY_ON as output
+    set_bit(MAINRELAY_DDR, MAINRELAY_OFF);      // MAINRELAY_OFF as output
+    VERBOSE_MSG(usart_send_string(" OK!\n")); 
+	
+	/*
+    // ------------------------------------------------------------------------
+	clr_bit(BatOverVoltageInterrupt_DDR,BatOverVoltageInterrupt);	// BatOverVoltageInterrupt como entrada
+	
+	clr_bit(Enable_DDR,Enable);					// Enable como entrada
+	set_bit(Enable_PORT,Enable);				// Enable com pull-up
+	
+	// interrupcao do Enable (Enable PD3)
+    set_bit(EICRA, ISC11);                      // falling edge for int1
+    set_bit(EIMSK, INT1);                       // enables int1 interrupt
+    set_bit(EIFR, INTF1);                       // clears int1 interrupt
+	
+	// interrupcao Over voltage Battery (BatOvervoltage_interrupt PD2)
+	set_bit(EICRA, ISC10);                      // rising edge for int1
+	set_bit(EIMSK, INT0);                       // enables int1 interrupt
+	set_bit(EIFR, INTF0);                       // clears int0 interrupt
+	*/	
+	
     sei();
 	
 	for(;;){

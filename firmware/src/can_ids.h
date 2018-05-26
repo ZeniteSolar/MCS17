@@ -31,7 +31,7 @@
 #define CAN_SIGNATURE_MAB17             230
 #define CAN_SIGNATURE_MIC17             240
 
-#define CAN_SIGNATURE_SELF              CAN_SIGNATURE_MAB17
+#define CAN_SIGNATURE_SELF              CAN_SIGNATURE_MCS17
 
 //------------------------------------------------------------------------------
 
@@ -75,7 +75,7 @@
 #define CAN_MSG_MIC17_MPPTS_POT_BYTE        2
 
 // MESSAGES FROM MIC17 TO MCS17:
-#define CAN_LENGHT_MSG_MIC17_MCS            2
+#define CAN_LENGTH_MSG_MIC17_MCS            2
 #define CAN_MSG_MIC17_MCS_BOAT_ON_BYTE      1
 #define CAN_MSG_MIC17_MCS_BOAT_ON_BIT       0
 
